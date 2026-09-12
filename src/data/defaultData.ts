@@ -20,9 +20,9 @@ export const DEFAULT_LOVE_DATA: LoveDeclarationData = {
   letterClosing: 'Com todo o meu amor e arrependimento sincero,',
   letterSignature: 'Eu te amo. ❤️',
   songDedication: {
-    title: 'Nossa História',
-    artist: '5 anos e um novo começo',
-    message: '“Não quero ser quem éramos — quero conhecer quem nos tornamos...”'
+    title: 'Um Amor Puro',
+    artist: 'Djavan',
+    message: '“Te adoro em tudo, tudo, tudo...”'
   },
   proposalQuestion: 'Você me permite tentar novamente e começar um novo relacionamento com você?',
   proposalSubtext: 'Não com promessas vazias, mas com atitudes diárias. Quero te reconquistar todos os dias.',

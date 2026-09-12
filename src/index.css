@@ -11,12 +11,53 @@ html {
   font-family: var(--font-sans);
 }
 
+body {
+  background:
+    radial-gradient(1200px 500px at 50% -10%, rgba(254, 205, 211, 0.55), transparent 70%),
+    linear-gradient(to bottom, #fff1f2, #fdf2f8 40%, #fffbeb);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: #fecdd3;
+  color: #881337;
+}
+
 .font-romantic-serif {
   font-family: "Cormorant Garamond", Georgia, serif;
 }
 
 .font-romantic-script {
   font-family: "Alex Brush", cursive;
+}
+
+/* Soft entrance for each section */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main > section {
+  animation: rise-in 0.7s ease both;
+}
+
+/* Slow ambient pulse for glows */
+@keyframes glow-drift {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.04);
+  }
 }
 
 @keyframes float-heart {
@@ -42,3 +83,15 @@ html {
   animation: float-heart linear infinite;
 }
 
+/* Elegant scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #fff1f2;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #fb7185, #e11d48);
+  border-radius: 8px;
+  border: 2px solid #fff1f2;
+}

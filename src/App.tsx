@@ -3,38 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DEFAULT_LOVE_DATA } from './data/defaultData';
-import { LoveDeclarationData, ReasonItem, TimelineEvent } from './types';
-import { romanticAudio } from './utils/audio';
 import { FloatingHearts } from './components/FloatingHearts';
 import { HeaderNav } from './components/HeaderNav';
 import { HeroSection } from './components/HeroSection';
 import { LoveStoryTimeline } from './components/LoveStoryTimeline';
 import { ReasonsWhyILoveYou } from './components/ReasonsWhyILoveYou';
 import { LoveLetterSection } from './components/LoveLetterSection';
+import { MusicDedication } from './components/MusicDedication';
 import { LovePromises } from './components/LovePromises';
 import { TheBigQuestion } from './components/TheBigQuestion';
 import { LoveCertificateModal } from './components/LoveCertificateModal';
-import { CustomizeModal } from './components/CustomizeModal';
 import { FooterSection } from './components/FooterSection';
-import { Music, Volume2, VolumeX, Heart, Award, Sparkles } from 'lucide-react';
+import { Volume2, Award } from 'lucide-react';
 
-const STORAGE_KEY = 'love_declaration_page_data_v3';
-const ACCEPTED_STORAGE_KEY = 'love_declaration_accepted_v3';
+const ACCEPTED_STORAGE_KEY = 'love_declaration_accepted_v4';
 
+// Página imutável: todo o conteúdo vem de DEFAULT_LOVE_DATA.
+// Sem personalização, sem edição, sem adicionar/remover.
 export default function App() {
-  const [data, setData] = useState<LoveDeclarationData>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch {
-      // fallback
-    }
-    return DEFAULT_LOVE_DATA;
-  });
+  const data = DEFAULT_LOVE_DATA;
 
   const [isAccepted, setIsAccepted] = useState<boolean>(() => {
     try {
@@ -44,23 +33,7 @@ export default function App() {
     }
   });
 
-  const [isPlayingMusic, setIsPlayingMusic] = useState<boolean>(false);
-  const [isCustomizeOpen, setIsCustomizeOpen] = useState<boolean>(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState<boolean>(false);
-
-  // Sync data to localStorage
-  const handleSaveData = (newData: LoveDeclarationData) => {
-    setData(newData);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-    } catch {
-      // ignore
-    }
-  };
-
-  const handleToggleMusic = () => {
-    romanticAudio.toggle(setIsPlayingMusic);
-  };
 
   const handleAcceptProposal = () => {
     setIsAccepted(true);
@@ -75,40 +48,6 @@ export default function App() {
     }, 900);
   };
 
-  const handleUpdateLetter = (updated: {
-    letterTitle: string;
-    letterGreeting: string;
-    letterBody: string[];
-    letterClosing: string;
-    letterSignature: string;
-  }) => {
-    const updatedData: LoveDeclarationData = {
-      ...data,
-      letterTitle: updated.letterTitle,
-      letterGreeting: updated.letterGreeting,
-      letterBody: updated.letterBody,
-      letterClosing: updated.letterClosing,
-      letterSignature: updated.letterSignature
-    };
-    handleSaveData(updatedData);
-  };
-
-  const handleUpdateReasons = (newReasons: ReasonItem[]) => {
-    const updatedData: LoveDeclarationData = {
-      ...data,
-      reasons: newReasons
-    };
-    handleSaveData(updatedData);
-  };
-
-  const handleUpdateTimeline = (newTimeline: TimelineEvent[]) => {
-    const updatedData: LoveDeclarationData = {
-      ...data,
-      timeline: newTimeline
-    };
-    handleSaveData(updatedData);
-  };
-
   const handleScrollToLetter = () => {
     const element = document.getElementById('carta');
     if (element) {
@@ -116,18 +55,25 @@ export default function App() {
     }
   };
 
+  const handleScrollToMusic = () => {
+    const element = document.getElementById('musica');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-rose-50/50 via-pink-50/30 to-rose-100/40 text-stone-800 font-sans selection:bg-rose-200 selection:text-rose-900">
+    <div className="relative min-h-screen bg-gradient-to-b from-rose-50 via-pink-50/60 to-amber-50/40 text-stone-800 font-sans selection:bg-rose-200 selection:text-rose-900">
       {/* Gentle ambient floating hearts and interactive click reaction */}
       <FloatingHearts />
+
+      {/* Decorative top glow */}
+      <div className="pointer-events-none absolute top-0 left-1/2 -z-0 h-[420px] w-full max-w-6xl -translate-x-1/2 rounded-full bg-gradient-to-b from-rose-200/50 via-pink-100/30 to-transparent blur-3xl" />
 
       {/* Main Top Header */}
       <HeaderNav
         senderName={data.senderName}
         receiverName={data.receiverName}
-        isPlayingMusic={isPlayingMusic}
-        onToggleMusic={handleToggleMusic}
-        onOpenCustomize={() => setIsCustomizeOpen(true)}
       />
 
       {/* Main Content Sections */}
@@ -143,20 +89,18 @@ export default function App() {
           onScrollToLetter={handleScrollToLetter}
         />
 
-        {/* 2. Nossa História (Interactive Story & Milestones) */}
+        {/* 2. Nossa História */}
         <LoveStoryTimeline
           timeline={data.timeline}
-          onUpdateTimeline={handleUpdateTimeline}
         />
 
-        {/* 3. Motivos Pelos Quais Eu Te Amo (Interactive Cards & Random Draw) */}
+        {/* 3. Motivos Pelos Quais Eu Te Amo */}
         <ReasonsWhyILoveYou
           reasons={data.reasons}
-          onUpdateReasons={handleUpdateReasons}
           receiverName={data.receiverName}
         />
 
-        {/* 4. A Carta de Amor (Parchment & Customization) */}
+        {/* 4. A Carta de Amor */}
         <LoveLetterSection
           letterTitle={data.letterTitle}
           letterGreeting={data.letterGreeting}
@@ -165,16 +109,23 @@ export default function App() {
           letterSignature={data.letterSignature}
           senderName={data.senderName}
           receiverName={data.receiverName}
-          onUpdateLetter={handleUpdateLetter}
         />
 
-        {/* 5. Nossas Promessas */}
+        {/* 5. Nossa Música — Um Amor Puro, Djavan */}
+        <MusicDedication
+          title={data.songDedication.title}
+          artist={data.songDedication.artist}
+          message={data.songDedication.message}
+          receiverName={data.receiverName}
+        />
+
+        {/* 6. Nossas Promessas */}
         <LovePromises
           senderName={data.senderName}
           receiverName={data.receiverName}
         />
 
-        {/* 6. O Grande Pedido (SIM / Não evasivo com chuva de confetes) */}
+        {/* 7. O Grande Pedido */}
         <TheBigQuestion
           proposalQuestion={data.proposalQuestion}
           proposalSubtext={data.proposalSubtext}
@@ -189,7 +140,6 @@ export default function App() {
       <FooterSection
         senderName={data.senderName}
         receiverName={data.receiverName}
-        onOpenCustomize={() => setIsCustomizeOpen(true)}
       />
 
       {/* Persistent Floating Controls (Bottom) */}
@@ -208,26 +158,15 @@ export default function App() {
 
         <button
           type="button"
-          onClick={handleToggleMusic}
-          className={`flex items-center gap-2 rounded-full p-3 shadow-xl backdrop-blur-md transition-all hover:scale-105 ${
-            isPlayingMusic
-              ? 'bg-rose-600 text-white shadow-rose-300 animate-pulse'
-              : 'border border-rose-200 bg-white/90 text-rose-600 hover:bg-rose-50 shadow-rose-100'
-          }`}
-          title={isPlayingMusic ? 'Pausar música romântica' : 'Ouvir melodia suave ao fundo'}
+          onClick={handleScrollToMusic}
+          className="flex items-center gap-2 rounded-full border border-rose-200 bg-white/90 p-3 text-rose-600 shadow-xl shadow-rose-100 backdrop-blur-md transition-all hover:scale-105 hover:bg-rose-50"
+          title="Ouvir nossa música: Um Amor Puro — Djavan"
         >
-          {isPlayingMusic ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+          <Volume2 className="h-5 w-5" />
         </button>
       </div>
 
-      {/* Modals */}
-      <CustomizeModal
-        isOpen={isCustomizeOpen}
-        onClose={() => setIsCustomizeOpen(false)}
-        data={data}
-        onSave={handleSaveData}
-      />
-
+      {/* Certificate Modal */}
       <LoveCertificateModal
         isOpen={isCertificateOpen}
         onClose={() => setIsCertificateOpen(false)}
