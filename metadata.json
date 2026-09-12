@@ -1,0 +1,6 @@
+{
+  "name": "Declaração de Amor",
+  "description": "Uma landing page romântica e interativa para se declarar ao seu amor, com linha do tempo, carta personalizada, motivos para amar e surpresa especial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
